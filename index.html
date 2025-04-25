@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Email Bot UI</title>
+  <style>
+    /* Overall body styling */
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f7f7f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    /* Centering the form box */
+    .container {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 400px;
+      padding: 2rem;
+    }
+
+    /* Title */
+    h2 {
+      text-align: center;
+      color: #4CAF50;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Input and Textarea styling */
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #4CAF50;
+      outline: none;
+    }
+
+    /* Button styling */
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    /* Status message styling */
+    #status {
+      text-align: center;
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+
+    /* Success message */
+    .success {
+      color: #28a745;
+    }
+
+    /* Error message */
+    .error {
+      color: #dc3545;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Email Bot</h2>
+    <input type="email" id="to" placeholder="Recipient Email" required />
+    <input type="text" id="subject" placeholder="Subject" required />
+    <textarea id="body" placeholder="Message Body" rows="6" required></textarea>
+    <button onclick="sendEmail()">Send Email</button>
+    <p id="status"></p>
+  </div>
+
+  <script>
+    async function sendEmail() {
+      const to = document.getElementById('to').value;
+      const subject = document.getElementById('subject').value;
+      const body = document.getElementById('body').value;
+
+      const payload = { to, subject, body };
+
+      try {
+        const res = await fetch('http://localhost:5678/webhook/email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          document.getElementById('status').innerText = '✅ Email sent!';
+          document.getElementById('status').classList.remove('error');
+          document.getElementById('status').classList.add('success');
+        } else {
+          document.getElementById('status').innerText = '❌ Failed to send: ' + res.status;
+          document.getElementById('status').classList.remove('success');
+          document.getElementById('status').classList.add('error');
+        }
+      } catch (err) {
+        document.getElementById('status').innerText = '❌ Error: ' + err.message;
+        document.getElementById('status').classList.remove('success');
+        document.getElementById('status').classList.add('error');
+      }
+    }
+  </script>
+</body>
+</html>
