@@ -20,6 +20,7 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       width: 400px;
       padding: 2rem;
+      box-sizing: border-box;
     }
 
     h2 {
@@ -70,6 +71,29 @@
     .error {
       color: #dc3545;
     }
+
+    .loading {
+      color: #ff9800;
+      font-size: 16px;
+    }
+
+    .file-label {
+      margin-bottom: 1rem;
+      font-size: 14px;
+    }
+
+    .file-input {
+      margin-bottom: 1rem;
+    }
+
+    .attachment-list {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    .attachment-list li {
+      margin-bottom: 0.5rem;
+    }
   </style>
 </head>
 <body>
@@ -79,40 +103,73 @@
     <input type="email" id="to" placeholder="Recipient Email" required />
     <input type="text" id="subject" placeholder="Subject" required />
     <textarea id="body" placeholder="Message Body" rows="6" required></textarea>
+    <div class="file-input">
+      <label for="attachment" class="file-label">Attach File (Optional)</label>
+      <input type="file" id="attachment" multiple />
+    </div>
     <button onclick="sendEmail()">Send Email</button>
     <p id="status"></p>
+    <ul id="attachment-list" class="attachment-list"></ul>
   </div>
 
   <script>
     async function sendEmail() {
-      const from = document.getElementById('from').value;
-      const to = document.getElementById('to').value;
-      const subject = document.getElementById('subject').value;
-      const body = document.getElementById('body').value;
+  const from = document.getElementById('from').value;
+  const to = document.getElementById('to').value;
+  const subject = document.getElementById('subject').value;
+  const body = document.getElementById('body').value;
+  const attachmentInput = document.getElementById('attachment');
+  const statusElement = document.getElementById('status');
+  const attachmentList = document.getElementById('attachment-list');
 
-      const payload = { from, to, subject, body };
+  if (!validateEmail(from) || !validateEmail(to)) {
+    statusElement.innerText = '❌ Invalid email address';
+    statusElement.className = 'error';
+    return;
+  }
 
-      try {
-        const res = await fetch('http://localhost:5678/webhook/email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+  const formData = new FormData();
+  formData.append("from", from);
+  formData.append("to", to);
+  formData.append("subject", subject);
+  formData.append("body", body);
 
-        if (res.ok) {
-          document.getElementById('status').innerText = '✅ Email sent!';
-          document.getElementById('status').classList.remove('error');
-          document.getElementById('status').classList.add('success');
-        } else {
-          document.getElementById('status').innerText = '❌ Failed to send: ' + res.status;
-          document.getElementById('status').classList.remove('success');
-          document.getElementById('status').classList.add('error');
-        }
-      } catch (err) {
-        document.getElementById('status').innerText = '❌ Error: ' + err.message;
-        document.getElementById('status').classList.remove('success');
-        document.getElementById('status').classList.add('error');
-      }
+  const files = attachmentInput.files;
+  attachmentList.innerHTML = "";
+  for (let i = 0; i < files.length; i++) {
+    formData.append("attachment", files[i]); // supports multiple attachments
+    const li = document.createElement("li");
+    li.textContent = files[i].name;
+    attachmentList.appendChild(li);
+  }
+
+  statusElement.innerText = '⏳ Sending email...';
+  statusElement.className = 'loading';
+
+  try {
+    const res = await fetch("http://localhost:5678/webhook/email", {
+      method: "POST",
+      body: formData
+    });
+
+    if (res.ok) {
+      statusElement.innerText = '✅ Email sent!';
+      statusElement.className = 'success';
+    } else {
+      statusElement.innerText = '❌ Failed to send: ' + res.status;
+      statusElement.className = 'error';
+    }
+  } catch (err) {
+    statusElement.innerText = '❌ Error: ' + err.message;
+    statusElement.className = 'error';
+  }
+}
+
+
+
+    function validateEmail(email) {
+      const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+      return re.test(String(email).toLowerCase());
     }
   </script>
 </body>
