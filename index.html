@@ -2,175 +2,324 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Email Bot UI</title>
+  <title>MailFlow Automator</title>
+  <meta name="viewport" content="width=800, initial-scale=1">
   <style>
     body {
-      font-family: 'Arial', sans-serif;
-      background-color: #f7f7f7;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #f7b42c 0%, #fc575e 100%);
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      margin: 0;
+      margin-top: 60px;
     }
 
     .container {
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      width: 400px;
-      padding: 2rem;
+      background: linear-gradient(135deg, #ffffff 60%, #e3f0ff 100%);
+      border-radius: 28px;
+      box-shadow: 0 8px 32px rgba(60, 60, 120, 0.18);
+      max-width: 1000px;
+      min-width: 500px;
+      width: 100%;
+      border: 2px solid #ffb347;
+      /* Reduce vertical padding for less height */
+      padding: 0.5rem 2.5rem 0.5rem 2.5rem;
       box-sizing: border-box;
+      transition: box-shadow 0.2s;
     }
 
     h2 {
       text-align: center;
-      color: #4CAF50;
-      margin-bottom: 1.5rem;
+      color: #fc575e;
+      margin-bottom: 1.2rem;
+      font-size: 2.2rem;
+      text-shadow: 1px 2px 8px #ffe0b2;
+    }
+
+    label {
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      display: block;
+      color: #2d2d2d;
+      letter-spacing: 0.5px;
+    }
+
+    .form-group {
+      margin-bottom: 0.8rem;
     }
 
     input, textarea {
       width: 100%;
-      padding: 12px;
-      margin-bottom: 1rem;
-      border-radius: 6px;
-      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 0.7rem;
+      border-radius: 8px;
+      border: 1.5px solid #ffb347;
       box-sizing: border-box;
+      font-size: 16px;
+      background: #fff8e1;
+      color: #222;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
 
     input:focus, textarea:focus {
-      border-color: #4CAF50;
+      border-color: #fc575e;
+      box-shadow: 0 0 0 2px #fc575e33;
       outline: none;
     }
 
-    button {
-      width: 100%;
-      padding: 12px;
-      background-color: #4CAF50;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #45a049;
-    }
-
-    #status {
-      text-align: center;
-      font-weight: bold;
-      margin-top: 1rem;
-    }
-
-    .success {
-      color: #28a745;
-    }
-
-    .error {
-      color: #dc3545;
-    }
-
-    .loading {
-      color: #ff9800;
-      font-size: 16px;
+    input:invalid, textarea:invalid {
+      border-color: #dc3545;
+      background: #ffeaea;
     }
 
     .file-label {
-      margin-bottom: 1rem;
-      font-size: 14px;
+      margin-bottom: 0.7rem;
+      font-size: 15px;
+      color: #ff9800;
+      font-weight: 600;
     }
 
     .file-input {
-      margin-bottom: 1rem;
+      margin-bottom: 0.7rem;
     }
 
     .attachment-list {
       list-style-type: none;
       padding-left: 0;
+      margin-top: 0.3rem;
     }
 
     .attachment-list li {
       margin-bottom: 0.5rem;
+      color: #1976d2;
+      font-size: 14px;
+      font-weight: 500;
+      background: #e3f0ff;
+      border-radius: 4px;
+      padding: 2px 8px;
+      display: inline-block;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      border: 0;
+    }
+
+    .form-error {
+      color: #dc3545;
+      font-size: 14px;
+      margin-top: -0.8rem;
+      margin-bottom: 0.8rem;
+      min-height: 18px;
+      font-weight: 500;
+    }
+
+    #status {
+      text-align: center;
+      font-weight: bold;
+      margin-top: 0.7rem;
+      font-size: 1rem;
+      min-height: 20px;
+    }
+
+    .success {
+      color: #43a047;
+      text-shadow: 0 1px 8px #b9f6ca;
+    }
+
+    .error {
+      color: #e53935;
+      text-shadow: 0 1px 8px #ffcdd2;
+    }
+
+    .loading {
+      color: #ff9800;
+      font-size: 17px;
+      text-shadow: 0 1px 8px #ffe0b2;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(90deg, #fc575e 0%, #f7b42c 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #ffb34733;
+      transition: background 0.2s, box-shadow 0.2s;
+      letter-spacing: 1px;
+    }
+
+    button:hover, button:focus {
+      background: linear-gradient(90deg, #f7b42c 0%, #fc575e 100%);
+      box-shadow: 0 4px 16px #fc575e33;
+      outline: none;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Email Bot</h2>
-    <input type="email" id="from" placeholder="Your Email (From)" required />
-    <input type="email" id="to" placeholder="Recipient Email" required />
-    <input type="text" id="subject" placeholder="Subject" required />
-    <textarea id="body" placeholder="Message Body" rows="6" required></textarea>
-    <div class="file-input">
-      <label for="attachment" class="file-label">Attach File (Optional)</label>
-      <input type="file" id="attachment" multiple />
-    </div>
-    <button onclick="sendEmail()">Send Email</button>
-    <p id="status"></p>
-    <ul id="attachment-list" class="attachment-list"></ul>
+  <div class="container" role="main" aria-labelledby="main-title">
+    <h2 id="main-title">MailFlow Automator</h2>
+    <form id="email-form" autocomplete="off" novalidate>
+      <div class="form-group">
+        <label for="from">Your Email (From)</label>
+        <input type="email" id="from" name="from" placeholder="e.g. you@example.com" required aria-required="true" autocomplete="off" />
+        <div id="from-error" class="form-error"></div>
+      </div>
+      <div class="form-group">
+        <label for="to">Recipient Email</label>
+        <input type="email" id="to" name="to" placeholder="e.g. recipient@example.com" required aria-required="true" autocomplete="off" />
+        <div id="to-error" class="form-error"></div>
+      </div>
+      <div class="form-group">
+        <label for="subject">Subject</label>
+        <input type="text" id="subject" name="subject" placeholder="Subject" required aria-required="true" />
+        <div id="subject-error" class="form-error"></div>
+      </div>
+      <div class="form-group">
+        <label for="body">Message Body</label>
+        <textarea id="body" name="body" placeholder="Type your message here..." rows="6" required aria-required="true"></textarea>
+        <div id="body-error" class="form-error"></div>
+      </div>
+      <div class="form-group file-input">
+        <label for="attachment" class="file-label">Attach File(s) <span style="font-weight:400">(Optional)</span></label>
+        <input type="file" id="attachment" name="attachment" multiple aria-describedby="attachment-desc" />
+        <span id="attachment-desc" class="visually-hidden">You can attach multiple files</span>
+      </div>
+      <button type="submit" id="send-btn">Send Email</button>
+      <p id="status" aria-live="polite"></p>
+      <ul id="attachment-list" class="attachment-list"></ul>
+    </form>
   </div>
 
   <script>
-    async function sendEmail() {
-  const from = document.getElementById('from').value;
-  const to = document.getElementById('to').value;
-  const subject = document.getElementById('subject').value;
-  const body = document.getElementById('body').value;
-  const attachmentInput = document.getElementById('attachment');
-  const statusElement = document.getElementById('status');
-  const attachmentList = document.getElementById('attachment-list');
+    const form = document.getElementById('email-form');
+    const statusElement = document.getElementById('status');
+    const attachmentList = document.getElementById('attachment-list');
+    const sendBtn = document.getElementById('send-btn');
 
-  if (!validateEmail(from) || !validateEmail(to)) {
-    statusElement.innerText = '❌ Invalid email address';
-    statusElement.className = 'error';
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("from", from);
-  formData.append("to", to);
-  formData.append("subject", subject);
-  formData.append("body", body);
-
-  const files = attachmentInput.files;
-  attachmentList.innerHTML = "";
-  for (let i = 0; i < files.length; i++) {
-    formData.append("attachment", files[i]); // supports multiple attachments
-    const li = document.createElement("li");
-    li.textContent = files[i].name;
-    attachmentList.appendChild(li);
-  }
-
-  statusElement.innerText = '⏳ Sending email...';
-  statusElement.className = 'loading';
-
-  try {
-    const res = await fetch("http://localhost:5678/webhook/email", {
-      method: "POST",
-      body: formData
-    });
-
-    if (res.ok) {
-      statusElement.innerText = '✅ Email sent!';
-      statusElement.className = 'success';
-    } else {
-      statusElement.innerText = '❌ Failed to send: ' + res.status;
-      statusElement.className = 'error';
+    // Helper to show field errors
+    function showError(id, message) {
+      document.getElementById(id + '-error').innerText = message || '';
     }
-  } catch (err) {
-    statusElement.innerText = '❌ Error: ' + err.message;
-    statusElement.className = 'error';
-  }
-}
 
+    // Validate form fields and show errors
+    function validateFields() {
+      let valid = true;
+      const from = document.getElementById('from').value.trim();
+      const to = document.getElementById('to').value.trim();
+      const subject = document.getElementById('subject').value.trim();
+      const body = document.getElementById('body').value.trim();
 
+      showError('from', '');
+      showError('to', '');
+      showError('subject', '');
+      showError('body', '');
 
+      if (!validateEmail(from)) {
+        showError('from', 'Please enter a valid sender email.');
+        valid = false;
+      }
+      if (!validateEmail(to)) {
+        showError('to', 'Please enter a valid recipient email.');
+        valid = false;
+      }
+      if (!subject) {
+        showError('subject', 'Subject is required.');
+        valid = false;
+      }
+      if (!body) {
+        showError('body', 'Message body is required.');
+        valid = false;
+      }
+      return valid;
+    }
+
+    // Email validation regex
     function validateEmail(email) {
-      const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+      const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       return re.test(String(email).toLowerCase());
     }
+
+    // Handle file input change to show selected files
+    document.getElementById('attachment').addEventListener('change', function() {
+      attachmentList.innerHTML = "";
+      for (let i = 0; i < this.files.length; i++) {
+        const li = document.createElement("li");
+        li.textContent = this.files[i].name;
+        attachmentList.appendChild(li);
+      }
+    });
+
+    // Main form submit handler
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      statusElement.innerText = '';
+      statusElement.className = '';
+      attachmentList.innerHTML = '';
+
+      if (!validateFields()) {
+        statusElement.innerText = '❌ Please correct the errors above.';
+        statusElement.className = 'error';
+        return;
+      }
+
+      const from = document.getElementById('from').value.trim();
+      const to = document.getElementById('to').value.trim();
+      const subject = document.getElementById('subject').value.trim();
+      const body = document.getElementById('body').value.trim();
+      const attachmentInput = document.getElementById('attachment');
+      const files = attachmentInput.files;
+
+      const formData = new FormData();
+      formData.append("from", from);
+      formData.append("to", to);
+      formData.append("subject", subject);
+      formData.append("body", body);
+
+      for (let i = 0; i < files.length; i++) {
+        formData.append("attachment", files[i]);
+        const li = document.createElement("li");
+        li.textContent = files[i].name;
+        attachmentList.appendChild(li);
+      }
+
+      statusElement.innerText = '⏳ Sending email...';
+      statusElement.className = 'loading';
+      sendBtn.disabled = true;
+
+      try {
+        const res = await fetch("http://localhost:5678/webhook/email", {
+          method: "POST",
+          body: formData
+        });
+
+        if (res.ok) {
+          statusElement.innerText = '✅ Email sent successfully!';
+          statusElement.className = 'success';
+          form.reset();
+          attachmentList.innerHTML = '';
+        } else {
+          statusElement.innerText = '❌ Failed to send: ' + res.status;
+          statusElement.className = 'error';
+        }
+      } catch (err) {
+        statusElement.innerText = '❌ Error: ' + err.message;
+        statusElement.className = 'error';
+      } finally {
+        sendBtn.disabled = false;
+      }
+    });
   </script>
 </body>
 </html>
